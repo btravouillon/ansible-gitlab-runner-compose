@@ -27,6 +27,7 @@
   loop:
     - { src: docker-compose.yml.j2, dest: docker-compose.yml }
     - { src: 0-runner-header.toml.j2, dest: conf.d/0-runner-header.toml }
+  notify: Restart gitlab-runner
 
 - name: Install python-gitlab package
   ansible.builtin.pip:
