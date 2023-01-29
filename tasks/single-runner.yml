@@ -39,6 +39,8 @@
       ansible.builtin.shell: |
         set -o pipefail
         grep token {{ runner_config_full_path }} | cut -d'"' -f2
+      args:
+        executable: /bin/bash
       changed_when: false
       register: runner_token_extraction
     - name: Define runner token variable
