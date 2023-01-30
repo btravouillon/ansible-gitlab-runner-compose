@@ -1,6 +1,6 @@
 # Runner configuration for {{ runner_target_type }} {{ runner_target }}
 [[runners]]
-  name = "{{ inventory_hostname }}"
+  name = "{{ item.description | default(inventory_hostname) }}"
   url  = "{{ item.gitlab_url }}"
   token = "{{ runner_token }}"
 {% if item.ca_cert is defined %}
@@ -12,7 +12,7 @@
   [runners.custom_build_dir]
   [runners.cache]
     [runners.cache.s3]
-    [runner.cache.gcs]
+    [runners.cache.gcs]
     [runners.cache.azure]
   [runners.docker]
     tls_verify = false

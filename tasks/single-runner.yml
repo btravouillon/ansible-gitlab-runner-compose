@@ -21,7 +21,7 @@
         state: present
         api_url: "{{ item.gitlab_url }}"
         api_token: "{{ gitlab_runner_api_token }}"
-        description: "{{ inventory_hostname }}"
+        description: "{{ item.description | default(inventory_hostname) }}"
         project: "{{ item.project is defined | ternary(runner_target, omit) }}"
         tag_list: "{{ item.tags | default([]) + [inventory_hostname] }}"
         registration_token: "{{ item.registration_token }}"
