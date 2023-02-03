@@ -29,11 +29,18 @@
     - { src: 0-runner-header.toml.j2, dest: conf.d/0-runner-header.toml }
   notify: Restart gitlab-runner
 
-- name: Install python-gitlab package
+- name: Install python-gitlab package with pip
+  when: gitlab_runner_package_manager == 'pip'
   ansible.builtin.pip:
     name: python-gitlab
     state: present
     extra_args: --user
+
+- name: Install python-gitlab with the package manager
+  when: gitlab_runner_package_manager != 'pip'
+  ansible.builtin.package:
+    name: python3-gitlab
+    state: present
 
 - include_tasks: single-runner.yml
   loop: "{{ gitlab_runner_runners }}"
