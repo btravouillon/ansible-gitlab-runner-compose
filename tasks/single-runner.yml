@@ -3,12 +3,6 @@
   ansible.builtin.set_fact:
     runner_target: "{{ item.group | default(item.project) }}"
     runner_target_type: "{{ item.group is defined | ternary('group', 'project') }}"
-- name: Test
-  ansible.builtin.set_fact:
-    runner_filename: "{{ runner_target_type }}-{{ runner_target.split('/') | join('__') }}.toml"
-- name: Test2
-  ansible.builtin.set_fact:
-    runner_config_full_path: "{{ gitlab_runner_config_directory }}/conf.d/{{ runner_filename }}"
 
 - name: Ensure the runner is registered and retrieve its token
   block:
@@ -27,6 +21,9 @@
         registration_token: "{{ item.registration_token }}"
         validate_certs: false
       register: runner_register
+    - name: Define runner config snippet
+      ansible.builtin.set_fact:
+        runner_config_full_path: "{{ gitlab_runner_config_directory }}/conf.d/runner-{{ runner_register.runner.id }}.toml"
     - name: Define runner token variable
       when: runner_register.changed and runner_register.runner.token is defined
       ansible.builtin.set_fact:
