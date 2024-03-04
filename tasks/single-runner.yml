@@ -50,5 +50,5 @@
     src: runner.toml.j2
     dest: "{{ runner_config_full_path }}"
     owner: "{{ ansible_user_id }}"
-    group: docker
+    group: "{{ ansible_user_id | default('docker') }}"
     mode: 0644

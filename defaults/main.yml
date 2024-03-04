@@ -16,6 +16,7 @@ gitlab_runner_allowed_pull_policies:
   - if-not-present
 
 gitlab_runner_package_manager: pip
+gitlab_runner_executor: docker
 
 # Define runners list as below
 # gitlab_runner_runners:

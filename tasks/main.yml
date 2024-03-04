@@ -3,14 +3,16 @@
   ansible.builtin.stat:
     path: "{{ gitlab_runner_docker_compose_path }}"
   register: docker_compose_exists
-  failed_when: not docker_compose_exists.stat.exists
+  failed_when: 
+     - not docker_compose_exists.stat.exists
+     - gitlab_runner_excutor == docker
 
 - name: Ensure GitLab Runner config directory exists
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "{{ ansible_user_id }}"
-    group: docker
+    group: "{{ ansible_user_id | default('docker') }}"
     mode: 0755
   loop:
     - "{{ gitlab_runner_config_directory }}"
@@ -28,6 +30,7 @@
     - { src: docker-compose.yml.j2, dest: docker-compose.yml }
     - { src: 0-runner-header.toml.j2, dest: conf.d/0-runner-header.toml }
   notify: Restart gitlab-runner
+  when: gitlab_runner_excutor == docker
 
 - name: Install python-gitlab package with pip
   when: gitlab_runner_package_manager == 'pip'
@@ -35,12 +38,14 @@
     name: python-gitlab
     state: present
     extra_args: --user
+  when: gitlab_runner_excutor == docker
 
 - name: Install python-gitlab with the package manager
   when: gitlab_runner_package_manager != 'pip'
   ansible.builtin.package:
     name: python3-gitlab
     state: present
+  when: gitlab_runner_excutor == docker
 
 - include_tasks: single-runner.yml
   loop: "{{ gitlab_runner_runners }}"
@@ -51,7 +56,7 @@
     dest: "{{ gitlab_runner_config_directory }}/conf/config.toml"
     delimiter: "##########################################"
     owner: "{{ ansible_user_id }}"
-    group: docker
+    group: "{{ ansible_user_id | default('docker') }}"
     mode: 0644
   notify: Restart gitlab-runner
 

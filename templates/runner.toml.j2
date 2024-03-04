@@ -6,7 +6,7 @@
 {% if item.ca_cert is defined %}
   tls-ca-file = "/etc/gitlab-runner/certs/{{ item.ca_cert }}"
 {% endif %}
-  executor = "docker"
+  executor = {{ gitlab_runner_executor }}
   output_limit = {{ gitlab_runner_output_limit }}
   environment = []
   [runners.custom_build_dir]
@@ -15,6 +15,7 @@
     [runners.cache.gcs]
     [runners.cache.azure]
   [runners.docker]
+{% if gitlab_runner_executor == docker %}
     tls_verify = false
     image = "alpine:3"
     privileged = {{ item.privileged | default('false') }}
@@ -26,5 +27,6 @@
     volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock"]
 {% else %}
     volumes = ["/cache"]
+{% endif %}
 {% endif %}
 
